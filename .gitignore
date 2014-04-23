@@ -1,1 +1,4 @@
+*.o[0-9]*
+build
+lib
 TODO
