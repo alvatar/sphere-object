@@ -1,22 +1,26 @@
+;;!!! Macros for programming in type-class style in Scheme
+;; .author André van Tonder: original work, 2004
+;; .author Álvaro Castro-Castilla: ported to rsc-macro-transformer, testing, adapted to SchemeSpheres
+
+;; (define-class <field-form> ...)
+;;
 ;; (define=> (<procedure-name> <class-form> ...) . body)
-
+;;
 ;; (lambda=> (<class-form> ...) . body)
-
+;;
 ;; (with (<instance-form> ...) . body)
-
+;;
 ;; (import-instance <instance-form> ...)
-
+;;
 ;; <field-form> = field-label
 ;;              | (<superclass-name> field-label)
- 
+;;
 ;; <class-form> = <class-name>
 ;;              | (<class-name> <prefix-symbol>)
-
+;;
 ;; <instance-form> = (<class-name> <instance-expr>)
 ;;                 | (<class-name> <instance-expr> <prefix-symbol>)
 
-
-;; (define-class <field-form> ...)
 (define-syntax define-class
   (rsc-macro-transformer
    (lambda (form env)
@@ -95,7 +99,7 @@
                                              (with ,rest . ,exps))))))
                  `(,instance (lambda ,pre-labels
                                (with ,super-bindings
-                                     (with ,rest . ,exps))))))) ))))
+                                     (with ,rest . ,exps)))))))))))
 
 (define-syntax import-instance
   (rsc-macro-transformer
@@ -164,7 +168,6 @@
             (with ,quals-binds
                   . ,body)))))))
 
-
 (define-syntax define=>
   (rsc-macro-transformer
    (lambda (form env)
@@ -173,4 +176,3 @@
        (let ((name  (car name.quals))
              (quals (cdr name.quals)))
          `(define ,name (lambda=> ,quals . ,body)))))))
-
