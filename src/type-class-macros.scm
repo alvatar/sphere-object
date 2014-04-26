@@ -1,7 +1,7 @@
 ;;!!! Macros for programming in type-class style in Scheme
 ;; .author André van Tonder: original work, 2004
 ;; .author Álvaro Castro-Castilla: ported to rsc-macro-transformer, testing, adapted to SchemeSpheres
-
+;;
 ;; (define-class <field-form> ...)
 ;;
 ;; (define=> (<procedure-name> <class-form> ...) . body)
@@ -20,6 +20,7 @@
 ;;
 ;; <instance-form> = (<class-name> <instance-expr>)
 ;;                 | (<class-name> <instance-expr> <prefix-symbol>)
+
 
 (define-syntax define-class
   (rsc-macro-transformer

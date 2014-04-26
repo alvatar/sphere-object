@@ -116,6 +116,7 @@
 
 ;;! Extension function: creates a generic deconstructor that returns all the fields as values
 ;; .parameter rtd A record type to build the deconstructor for
+;; .paramter predicate The predicate of the rtd, if it's already built (otherwise generate)
 (define (rtd-deconstructor rtd . predicate)
   (if (rtd? rtd)
       (let ((predicate? (if (null? predicate) (rtd-predicate rtd) (car predicate)))
@@ -226,12 +227,15 @@
   (if (rtd-parent rtd) (rtd-for-all (rtd-parent rtd) proc)) 
   (rtd-for-each rtd proc))
 
+;;! Get the field names of the rtd
 (define (rtd-field-names rtd)
   (list->vector (rtd-map rtd (lambda (i name . rest) name))))
 
+;;! Get *all* the field names of the rtd
 (define (rtd-all-field-names rtd)
   (list->vector (rtd-map-all rtd (lambda (i name . rest) name))))
 
+;;! Query whether the given field of a rtd is mutable
 (define (rtd-field-mutable? rtd field)
   (if (rtd? rtd)
       (call/cc
