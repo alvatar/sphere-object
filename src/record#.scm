@@ -1,5 +1,5 @@
-;;; Copyright (c) 2014, Alvaro Castro-Castilla. All rights reserved.
-;;; SRFI-99 Records
+;;! Copyright (c) 2014, Alvaro Castro-Castilla. All rights reserved.
+;; Public procedures: SRFI-99 Records
 
 (##namespace ("object:record#"
               make-rtd

@@ -1,5 +1,6 @@
 (define modules
-  '(record))
+  '(record
+    prototype))
 
 (define-task compile ()
   (for-each (lambda (m)
