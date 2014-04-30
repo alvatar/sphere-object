@@ -393,7 +393,7 @@
                       self scale)])]
             [(expand-by self expansion)
              [$ inset-by self
-                (if (object? expansion) [$ negate expansion] (- expansion))]]
+                (if (prototype-object? expansion) [$ negate expansion] (- expansion))]]
             [(inset-by self inset)
              (cond
               [(number? inset)
@@ -626,274 +626,201 @@
 (test-assert "point equality 6" (=? (new-point x: -23 y:  -14) [$ negate p1]))
 
 (test-assert "point comparison 1" [$ <=? p0 p1])
-;; (add-eq-test 'point #f [$ <=? p1 p3])
-;; (add-eq-test 'point #t [$ <?  p0 p1])
-;; (add-eq-test 'point #f [$ <?  p4 p1])
-;; (add-eq-test 'point #t [$ <=? p4 p1])
-;; (add-eq-test 'point #f [$ >?  p4 p1])
-;; (add-eq-test 'point #t [$ >?  p4 p0])
-;; (add-eq-test 'point #t [$ >=? p1 p4])
-;; (add-eq-test 'point #f [$ >?  p1 p4])
-;; (add-eq-test 'point #t [$ <>? p1 p4])
-;; (add-eq-test 'point #f [$ <>? p1 p1])
+(test-assert "point comparison 2" (not [$ <=? p1 p3]))
+(test-assert "point comparison 3" [$ <?  p0 p1])
+(test-assert "point comparison 4" (not [$ <?  p4 p1]))
+(test-assert "point comparison 5" [$ <=? p4 p1])
+(test-assert "point comparison 6" (not [$ >?  p4 p1]))
+(test-assert "point comparison 7" [$ >?  p4 p0])
+(test-assert "point comparison 8" [$ >=? p1 p4])
+(test-assert "point comparison 9" (not [$ >?  p1 p4]))
+(test-assert "point comparison 10" [$ <>? p1 p4])
+(test-assert "point comparison 11" (not [$ <>? p1 p1]))
 
-;; (add-test 'point (new-point x:   7 y:   5) [$ min-point p2 p3] =?)
-;; (add-test 'point (new-point x:  17 y: 123) [$ max-point p2 p3] =?)
-;; (add-test 'point (new-point x: 120 y: 123) [$ max-point (new-point x: 120 y: 45) p2] =?)
+(test-assert "point min" (=? (new-point x:   7 y:   5) [$ min-point p2 p3]))
+(test-assert "point max 1" (=? (new-point x:  17 y: 123) [$ max-point p2 p3]))
+(test-assert "point max 2" (=? (new-point x: 120 y: 123) [$ max-point (new-point x: 120 y: 45) p2]))
 
-;; (add-test 'point 5.0 [$ distance-between (new-point x: 0 y: 3) (new-point x: 4 y: 0)] =)
+(test-assert (= 5.0 [$ distance-between (new-point x: 0 y: 3) (new-point x: 4 y: 0)]))
 
-;; (add-test 'point (new-point x: 16 y: 13)
-;;           [$ nearest-point-on-line-between p1 p2 p3] =?)
+(test-assert (=? (new-point x: 16 y: 13)
+                 [$ nearest-point-on-line-between p1 p2 p3]))
 
-;; (ensure-exception-raised 'point
-;;            error-exception?
-;;            [$ nearest-point-on-line-between p1 2 p3]
-;;            )
+(test-error "[$ nearest-point-on-line-between p1 2 p3]"
+            [$ nearest-point-on-line-between p1 2 p3])
 
-;; (add-test 'point (new-point x: 3 y: 4) (polar->point 5 (asin (+ 0.0 (/ 3 5)))) =?)
-;; (add-test 'point (new-rectangle x: [$ x p1] y: [$ y p1] width: [$ x p2] height: [$ y p2])
-;;                  [$ rect-from-extent p1 p2] =?)
-;; (add-test 'point (new-rectangle x: 10 y: 20 width: 30 height: 40)
-;;                  [$ rect-from-2-points (new-point x: 10 y: 20)
-;;                     (new-point x: 40 y: 60)] =?)
-;; (add-test 'point (new-rectangle x: [$ x p1] y: [$ y p1] width: 0 height: 0)
-;;                  [$ as-rectangle p1] =?)
-;; (add-test 'point 5.0 [$ polar-r (new-point x: 3 y: 4)] =)
-;; ;; NOTE: 2 argument atan NYI for Ikarus at this time. (atan 4 3)
-;; (add-test 'point (atan (+ 0.0 (/ 4 3))) [$ polar-theta (new-point x: 3 y: 4)] =)
+(test-assert "point operation 1" (=? (new-point x: 3 y: 4) (polar->point 5 (asin (+ 0.0 (/ 3 5))))))
+(test-assert "point operation 2" (=? (new-rectangle x: [$ x p1] y: [$ y p1] width: [$ x p2] height: [$ y p2])
+                                     [$ rect-from-extent p1 p2]))
+(test-assert "point operation 3"
+             (=? (new-rectangle x: 10 y: 20 width: 30 height: 40)
+                 [$ rect-from-2-points (new-point x: 10 y: 20)
+                    (new-point x: 40 y: 60)]))
+(test-assert "point operation 4" (=? (new-rectangle x: [$ x p1] y: [$ y p1] width: 0 height: 0)
+                 [$ as-rectangle p1]))
+(test-assert "point operation 5" (= 5.0 [$ polar-r (new-point x: 3 y: 4)]))
+(test-assert "point operation 6" (= (atan (+ 0.0 (/ 4 3))) [$ polar-theta (new-point x: 3 y: 4)]))
+(test-assert "point operation 7" (=? (new-rectangle x: 7 y: 5 width: 113 height: 118)
+                                     (list-of-points->rectangle
+                                      (list p1 p2 p3 p4 (new-point x: 120 y: 24)))))
 
-;; (add-test 'point (new-rectangle x: 7 y: 5 width: 113 height: 118)
-;;           (list-of-points->rectangle
-;;            (list p1 p2 p3 p4 (new-point x: 120 y: 24))) =?)
+;==============================================================;
+;;; RECTANGLEs
 
+(define r1 (new-rectangle x:  3 y:  4 width: 600 height: 400))
+(define r2 (new-rectangle x:  4 y:  6 width: 200 height: 100))
+(define r3 (new-rectangle x:  5 y: 10 width: 600 height: 400))
+(define r4 (new-rectangle x: 15 y:  5 width: 600 height: 400))
 
-
-;; ;==============================================================;
-;; ;;; RECTANGLEs
-
-;; (add-test-suite 'rectangle) ;; default-setup-thunk default-teardown-thunk)
-
-;; (define r1 (new-rectangle x:  3 y:  4 width: 600 height: 400))
-;; (define r2 (new-rectangle x:  4 y:  6 width: 200 height: 100))
-;; (define r3 (new-rectangle x:  5 y: 10 width: 600 height: 400))
-;; (define r4 (new-rectangle x: 15 y:  5 width: 600 height: 400))
-
-;; (add-eq-test 'rectangle #t [$ contains-rect? r1 r2])
-;; (add-eq-test 'rectangle #f [$ contains-rect? r1 r3])
-;; (add-eq-test 'rectangle #t [$ contains-point? r1 (new-point x: 5 y: 8)])
-;; (add-eq-test 'rectangle #f [$ contains-point? r1 (new-point x: 2 y: 2)])
-;; (add-test 'rectangle (+ 3 600) [$ max-x r1] =)
-;; (add-test 'rectangle (+ 4 400) [$ max-y r1] =)
-;; (add-test 'rectangle (new-rectangle x:   3 y: 4 width: 300 height: 400)
-;;           [$ with-width  r1 300] =?)
-;; (add-test 'rectangle (new-rectangle x:   3 y: 4 width: 600 height: 200)
-;;           [$ with-height r1 200] =?)
-;; (add-test 'rectangle (new-rectangle x:  12 y: 4 width: 600 height: 400)
-;;           [$ with-x      r1  12] =?)
-;; (add-test 'rectangle (new-rectangle x:  3 y: 12 width: 600 height: 400)
-;;           [$ with-y      r1  12] =?)
-;; (add-test 'rectangle (new-rectangle x:  3 y:  4 width: 100 height: 200)
-;;           	     [$ with-extent r1 (new-point x: 100 y: 200)] =?)
-;; (add-test 'rectangle (new-point x: (+ 3 300) y: (+ 4 200)) [$ center-point r1] =?)
-;; (add-test 'rectangle (new-point x:   3 y:   4) [$ top-left-point      r1] =?)
-;; (add-test 'rectangle (new-point x: 603 y:   4) [$ top-right-point     r1] =?)
-;; (add-test 'rectangle (new-point x:   3 y: 404) [$ bottom-left-point   r1] =?)
-;; (add-test 'rectangle (new-point x: 603 y: 404) [$ bottom-right-point  r1] =?)
-;; (add-test 'rectangle (new-point x:   3 y: 204) [$ left-center-point   r1] =?)
-;; (add-test 'rectangle (new-point x: 603 y: 204) [$ right-center-point  r1] =?)
-;; (add-test 'rectangle (new-point x: 303 y:   4) [$ top-center-point    r1] =?)
-;; (add-test 'rectangle (new-point x: 303 y: 404) [$ bottom-center-point r1] =?)
-;; (add-test 'rectangle (new-rectangle x: 100 y: 100 width: 503 height: 304)
-;;                      [$ with-top-left      r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-rectangle x: 3 y: 100 width:  97 height: 304)
-;;                      [$ with-top-right     r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-rectangle x: 100 y: 4 width: 503 height:  96)
-;;                      [$ with-bottom-left   r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-rectangle x: 3 y: 4 width: 97 height: 96)
-;;                      [$ with-bottom-right  r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-rectangle x: 100 y: 4 width: 503 height: 400)
-;;                      [$ with-left-center   r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-rectangle x: 100 y: 4 width:  97 height: 400)
-;;                      [$ with-right-center  r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-rectangle x: 3 y:   4 width: 600 height: 96)
-;;                      [$ with-bottom-center r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-rectangle x: 3 y: 100 width: 600 height: 304)
-;;                      [$ with-top-center    r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-point x: 100 y: 100)
-;;                      [$ constrain-point    r1 (new-point x: 100 y: 100)] =?)
-;; (add-test 'rectangle (new-point x: 3 y: 4)
-;;                      [$ constrain-point    r1 (new-point x: 1 y: 1)] =?)
-;; (add-test 'rectangle (new-point x: 3 y: 404)
-;;                      [$ constrain-point    r1 (new-point x: 1 y: 800)] =?)
-;; (add-test 'rectangle (new-point x: 603 y: 30)
-;;                      [$ constrain-point    r1 (new-point x: 800 y: 30)] =?)
-;; (add-test 'rectangle (new-point x: 603 y: 404)
-;;                      [$ constrain-point    r1 (new-point x: 800 y: 800)] =?)
-;; (add-test 'rectangle (new-rectangle x: 15 y: 10 width: 590 height: 395)
-;;                      [$ intersection  r3 r4] =?)
-;; (add-test 'rectangle [$ intersection  r4 r3]
-;;                      [$ intersection  r3 r4] =?)
-;; (add-test 'rectangle (new-rectangle x:  5 y:  5 width: 610 height: 405)
-;;                      [$ union         r3 r4] =?)
-;; (add-test 'rectangle [$ union         r4 r3]
-;;                      [$ union         r3 r4] =?)
-;; (add-eq-test 'rectangle #t [$ empty? (new-rectangle x: 2 y: 3 width: 0 height: 0)])
-;; (add-eq-test 'rectangle #f [$ empty? (new-rectangle x: 2 y: 3 width: 1 height: 0)])
-;; (add-eq-test 'rectangle #f [$ empty? (new-rectangle x: 2 y: 3 width: 0 height: 1)])
-;; (add-eq-test 'rectangle #t [$ empty? (new-rectangle x: 2 y: 3 width: 0 height: 0)])
-;; (add-eq-test 'rectangle #t [$ empty? [$ rect-from-2-points p1 p1]])
-;; (add-eq-test 'rectangle #f [$ empty? r1])
-;; (add-test 'rectangle (new-point x: 200 y: 300)
-;;                      [$ closest-point-to
-;;                         (new-rectangle x: 200 y: 300 width: 80 height: 40) p1] =?)
-;; (add-test 'rectangle (new-rectangle x: 26 y: 18 width: 600 height: 400)
-;;                      [$ translate-by r1 p1] =?)
-;; (add-test 'rectangle (new-rectangle x:    3 y:    4 width:   3000 height:  2000)
-;;                      [$ scale-by r1  5] =?)
-;; (add-test 'rectangle (new-rectangle x:    3 y:    4 width:  13800 height:  5600)
-;;                      [$ scale-by r1 p1] =?)
-;; (add-test 'rectangle (new-rectangle x: 2403 y: 2404 width: 120000 height: 40000)
-;;                      [$ scale-by r1 r2] =?)
-;; (add-test 'rectangle (new-rectangle x: 8 y: 9 width: 590 height: 390)
-;;                      [$ inset-by r1 5] =?)
-;; (add-test 'rectangle (new-rectangle x: 7 y: 13 width: 596 height: 394)
-;;                      [$ inset-by r3 (new-point x: 2 y: 3)] =?)
-;; (add-test 'rectangle (new-rectangle x: 1 y: 6 width: 608 height: 408)
-;;                      [$ expand-by r3 4] =?)
-;; (add-test 'rectangle (new-rectangle x: 3 y: 7 width: 604 height: 406)
-;;                      [$ expand-by r3 (new-point x: 2 y: 3)] =?)
+(test-assert "rectangle operation 1" [$ contains-rect? r1 r2])
+(test-assert "rectangle operation 2" (not [$ contains-rect? r1 r3]))
+(test-assert "rectangle operation 3" [$ contains-point? r1 (new-point x: 5 y: 8)])
+(test-assert "rectangle operation 4" (not [$ contains-point? r1 (new-point x: 2 y: 2)]))
+(test-assert "rectangle operation 5" (= (+ 3 600) [$ max-x r1]))
+(test-assert "rectangle operation 6" (= (+ 4 400) [$ max-y r1]))
+(test-assert "rectangle operation 7" (=? (new-rectangle x:   3 y: 4 width: 300 height: 400)
+                                         [$ with-width  r1 300]))
+(test-assert "rectangle operation 8" (=? (new-rectangle x:   3 y: 4 width: 600 height: 200)
+                                         [$ with-height r1 200]))
+(test-assert "rectangle operation 9" (=? (new-rectangle x:  12 y: 4 width: 600 height: 400)
+                                         [$ with-x      r1  12]))
+(test-assert "rectangle operation 10" (=? (new-rectangle x:  3 y: 12 width: 600 height: 400)
+                                          [$ with-y      r1  12]))
+(test-assert "rectangle operation 11" (=? (new-rectangle x:  3 y:  4 width: 100 height: 200)
+                                          [$ with-extent r1 (new-point x: 100 y: 200)]))
+(test-assert "rectangle operation 12" (=? (new-point x: (+ 3 300) y: (+ 4 200)) [$ center-point r1]))
+(test-assert "rectangle operation 13" (=? (new-point x:   3 y:   4) [$ top-left-point      r1]))
+(test-assert "rectangle operation 14" (=? (new-point x: 603 y:   4) [$ top-right-point     r1]))
+(test-assert "rectangle operation 15" (=? (new-point x:   3 y: 404) [$ bottom-left-point   r1]))
+(test-assert "rectangle operation 16" (=? (new-point x: 603 y: 404) [$ bottom-right-point  r1]))
+(test-assert "rectangle operation 17" (=? (new-point x:   3 y: 204) [$ left-center-point   r1]))
+(test-assert "rectangle operation 18" (=? (new-point x: 603 y: 204) [$ right-center-point  r1]))
+(test-assert "rectangle operation 19" (=? (new-point x: 303 y:   4) [$ top-center-point    r1]))
+(test-assert "rectangle operation 20" (=? (new-point x: 303 y: 404) [$ bottom-center-point r1]))
+(test-assert "rectangle operation 21" (=? (new-rectangle x: 100 y: 100 width: 503 height: 304)
+                                          [$ with-top-left      r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 22" (=? (new-rectangle x: 3 y: 100 width:  97 height: 304)
+                                          [$ with-top-right     r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 23" (=? (new-rectangle x: 100 y: 4 width: 503 height:  96)
+                                          [$ with-bottom-left   r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 24" (=? (new-rectangle x: 3 y: 4 width: 97 height: 96)
+                                          [$ with-bottom-right  r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 25" (=? (new-rectangle x: 100 y: 4 width: 503 height: 400)
+                                          [$ with-left-center   r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 26" (=? (new-rectangle x: 100 y: 4 width:  97 height: 400)
+                                          [$ with-right-center  r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 27" (=? (new-rectangle x: 3 y:   4 width: 600 height: 96)
+                                          [$ with-bottom-center r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 28" (=? (new-rectangle x: 3 y: 100 width: 600 height: 304)
+                                          [$ with-top-center    r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 29" (=? (new-point x: 100 y: 100)
+                                          [$ constrain-point    r1 (new-point x: 100 y: 100)]))
+(test-assert "rectangle operation 30" (=? (new-point x: 3 y: 4)
+                                          [$ constrain-point    r1 (new-point x: 1 y: 1)]))
+(test-assert "rectangle operation 31" (=? (new-point x: 3 y: 404)
+                                          [$ constrain-point    r1 (new-point x: 1 y: 800)]))
+(test-assert "rectangle operation 32" (=? (new-point x: 603 y: 30)
+                                          [$ constrain-point    r1 (new-point x: 800 y: 30)]))
+(test-assert "rectangle operation 33" (=? (new-point x: 603 y: 404)
+                                          [$ constrain-point    r1 (new-point x: 800 y: 800)]))
+(test-assert "rectangle operation 34" (=? (new-rectangle x: 15 y: 10 width: 590 height: 395)
+                                          [$ intersection  r3 r4]))
+(test-assert "rectangle operation 35"  (=? [$ intersection  r4 r3]
+                                           [$ intersection  r3 r4]))
+(test-assert "rectangle operation 36" (=? (new-rectangle x:  5 y:  5 width: 610 height: 405)
+                                          [$ union         r3 r4]))
+(test-assert "rectangle operation 37" (=? [$ union         r4 r3]
+                                          [$ union         r3 r4]))
+(test-assert "rectangle operation 38" [$ empty? (new-rectangle x: 2 y: 3 width: 0 height: 0)])
+(test-assert "rectangle operation 39" (not [$ empty? (new-rectangle x: 2 y: 3 width: 1 height: 0)]))
+(test-assert "rectangle operation 40" (not [$ empty? (new-rectangle x: 2 y: 3 width: 0 height: 1)]))
+(test-assert "rectangle operation 41" [$ empty? (new-rectangle x: 2 y: 3 width: 0 height: 0)])
+(test-assert "rectangle operation 42" [$ empty? [$ rect-from-2-points p1 p1]])
+(test-assert "rectangle operation 43" (not [$ empty? r1]))
+(test-assert "rectangle operation 44" (=? (new-point x: 200 y: 300)
+                                          [$ closest-point-to
+                                             (new-rectangle x: 200 y: 300 width: 80 height: 40) p1]))
+(test-assert "rectangle operation 45" (=? (new-rectangle x: 26 y: 18 width: 600 height: 400)
+                                          [$ translate-by r1 p1]))
+(test-assert "rectangle operation 46" (=? (new-rectangle x:    3 y:    4 width:   3000 height:  2000)
+                                          [$ scale-by r1  5]))
+(test-assert "rectangle operation 47" (=? (new-rectangle x:    3 y:    4 width:  13800 height:  5600)
+                                          [$ scale-by r1 p1]))
+(test-assert "rectangle operation 48" (=? (new-rectangle x: 2403 y: 2404 width: 120000 height: 40000)
+                                          [$ scale-by r1 r2]))
+(test-assert "rectangle operation 49" (=? (new-rectangle x: 8 y: 9 width: 590 height: 390)
+                                          [$ inset-by r1 5]))
+(test-assert "rectangle operation 50" (=? (new-rectangle x: 7 y: 13 width: 596 height: 394)
+                                          [$ inset-by r3 (new-point x: 2 y: 3)]))
+(test-assert "rectangle operation 51" (=? (new-rectangle x: 1 y: 6 width: 608 height: 408)
+                                          [$ expand-by r3 4]))
+(test-assert "rectangle operation 52" (=? (new-rectangle x: 3 y: 7 width: 604 height: 406)
+                                          [$ expand-by r3 (new-point x: 2 y: 3)]))
 
 
-;; ;==============================================================;
-;; ;;; COLOR
+;==============================================================;
+;;; COLOR
 
-;; (add-test-suite 'color) ;; default-setup-thunk default-teardown-thunk)
+(define c1 (color-named 'blue))
+(define c2 (rgb->color 12 124 65))
 
-;; (define c1 (color-named 'blue))
-;; (define c2 (rgb->color 12 124 65))
+(test-assert "color operation 1" (color? c1))
+(test-assert "color operation 2" (not (color? 'blue)))
+(test-assert "color operation 3" (not [$ =? c1 c2]))
 
-;; (add-eq-test 'color #t (color? c1))
-;; (add-eq-test 'color #f (color? 'blue))
-;; (add-eq-test 'color #f [$ =? c1 c2])
-;; (add-eq-test 'color #t (=? (color-named 'black)
-;;                            (rgb->color   0   0   0)))
-;; (add-eq-test 'color #t (=? (color-named 'white)
-;;                            (rgb->color 255 255 255)))
+(test-assert "color operation 4" (=? (color-named 'black)
+                                     (rgb->color   0   0   0)))
+(test-assert "color operation 5" (=? (color-named 'white)
+                                     (rgb->color 255 255 255)))
 
-;; (ensure-exception-raised 'color
-;;            error-exception?
-;;            (new-color red: 255 green: 120 blue:  15)
-;;            )
+(test-error "color error"
+           (new-color red: 255 green: 120 blue:  15))
 
-;; (add-test 'color (new-color red: 0 green: 0 blue:  0.8)
-;;                  [$ mixed-with c1 c2 1] =?)
-;; (add-test 'color (new-color red: .875 green: .875 blue: 0.975)
-;;                  [$ lighter c1 2] =?)
-;; (add-test 'color (new-color red: 0.0 green: 0.0 blue: 0.1)
-;;                  [$ darker  c1 2] =?)
-;; (add-test 'color (new-color red: 0.7 green: 0.6475 blue: 0.49)
-;;                  (hsb->color 45 .3 .7) =?)
-;; (add-test 'color (new-color red: .5 green:  1 blue: .5)
-;;                  (hsb->color 120 .5 1) =?)
-;; (add-test 'color (new-color red:  0 green:  0 blue: .5)
-;;                  (hsb->color 240 1 .5) =?)
-;; (add-test 'color (rgb->color  255  0  0)
-;;                  (hsb->color  0  1  1) =?)
+(test-assert "color operation 6" (=? (new-color red: 0 green: 0 blue:  0.8)
+                                     [$ mixed-with c1 c2 1]))
+(test-assert "color operation 7" (=? (new-color red: .875 green: .875 blue: 0.975)
+                                     [$ lighter c1 2]))
+(test-assert "color operation 8" (=? (new-color red: 0.0 green: 0.0 blue: 0.1)
+                                     [$ darker  c1 2]))
+(test-assert "color operation 9" (=? (new-color red: 0.7 green: 0.6475 blue: 0.49)
+                                     (hsb->color 45 .3 .7)))
+(test-assert "color operation 10" (=? (new-color red: .5 green:  1 blue: .5)
+                                      (hsb->color 120 .5 1)))
+(test-assert "color operation 11" (=? (new-color red:  0 green:  0 blue: .5)
+                                      (hsb->color 240 1 .5)))
+(test-assert "color operation 12" (=? (rgb->color  255  0  0)
+                                      (hsb->color  0  1  1)))
 
-;; ;==============================================================;
-;; ;;; EVENTs
+;==============================================================;
+;;; EVENTs
 
-;; (add-test-suite 'events) ;; default-setup-thunk default-teardown-thunk)
+(define e1 (make-event 'mouse-down '(x . 40) '(y . 100)))
+(define e2 (make-event 'mouse-move '(x . 45) '(y .  98)))
+(define e3 (make-event 'mouse-up   '(x . 46) '(y .  19)))
+(define (lookup name alist)
+  (cond
+   ((assq name alist) => cdr)
+   (else (error 'lookup "name not found" name alist))))
+(define test-handler
+  (lambda (evt)
+    (list [$ name evt] (lookup 'x [$ args evt]) (lookup 'y [$ args evt]))))
 
-;; (define e1 (make-event 'mouse-down '(x . 40) '(y . 100)))
-;; (define e2 (make-event 'mouse-move '(x . 45) '(y .  98)))
-;; (define e3 (make-event 'mouse-up   '(x . 46) '(y .  19)))
-;; (define (lookup name alist)
-;;   (cond
-;;    ((assq name alist) => cdr)
-;;    (else (error 'lookup "name not found" name alist))))
-;; (define test-handler
-;;   (lambda (evt)
-;;     (list [$ name evt] (lookup 'x [$ args evt]) (lookup 'y [$ args evt]))))
+[$ add-handler! event-handlers 'mouse-up   test-handler]
+[$ add-handler! event-handlers 'mouse-down test-handler]
+[$ add-handler! event-handlers 'mouse-move test-handler]
 
-;; [$ add-handler! event-handlers 'mouse-up   test-handler]
-;; [$ add-handler! event-handlers 'mouse-down test-handler]
-;; [$ add-handler! event-handlers 'mouse-move test-handler]
-
-;; (add-equal-test 'events '(mouse-down 40 100)
-;;                 [$ handle-event event-handlers e1])
-;; (add-equal-test 'events '(mouse-move 45  98)
-;;                 [$ handle-event event-handlers e2])
-;; (add-equal-test 'events '(mouse-up   46  19)
-;;                 [$ handle-event event-handlers e3])
-;; (add-test 'events '(mouse-up   46  19)
-;;                 [$ handle-event event-handlers e3] equal?)
-
-
-
-;; ;==============================================================;
-;; ;(import (tiny-talk-plus))
-;; ;(start-tiny-talk)
-
-;; (define (vowel? c) (and (char? c) (memq c (string->list "aeiou")) #t))
-;; (define (nv? x) (not (vowel? x)))
-;; (define (id x) x) ;; identity
-
-;; (add-test-suite 'tt-plus) ;; default-setup-thunk default-teardown-thunk)
-
-;; (add-equal-test 'tt-plus "abcdef" [$ join "abc" "def"])
-;; (add-equal-test 'tt-plus (vector 1 2 3 'a 'b 'c)
-;;                 [$ join (vector 1 2 3) (vector 'a 'b 'c)])
-;; (add-equal-test 'tt-plus (list 1 2 3 'a 'b 'c)
-;;                 [$ join '(1 2 3) '(a b c)])
-;; (add-eq-test 'tt-plus #t [$ every? "aeiou" vowel?])
-;; (add-eq-test 'tt-plus #t [$ every? (string->list "aeiou") vowel?])
-;; (add-eq-test 'tt-plus #t [$ every? (list->vector (string->list "aeiou")) vowel?])
-;; (add-eq-test 'tt-plus #f [$ every? "aeixou" vowel?])
-;; (add-eq-test 'tt-plus #f [$ every? (string->list "aeixou") vowel?])
-;; (add-eq-test 'tt-plus #f [$ every? (list->vector (string->list "aeixou")) vowel?])
-;; (add-eq-test 'tt-plus #t [$ any? (list->vector (string->list "aeiou")) vowel?])
-;; (add-eq-test 'tt-plus #f [$ any? (list->vector (string->list "aeiou")) nv?])
-;; (add-eq-test 'tt-plus #t [$ any? (string->list "aeixou") nv?])
-;; (add-eq-test 'tt-plus #f [$ any? (string->list "aeiou" ) nv?])
-;; (add-eq-test 'tt-plus #t [$ any? "aeixou" nv?])
-;; (add-eq-test 'tt-plus #f [$ any? "aeiou"  nv?])
-;; (add-eq-test 'tt-plus #t [$ any? "aeixou" nv?])
-;; (add-test 'tt-plus "ths s  lttl strng"
-;;           [$ reject  "this is a little string" vowel?] string=?)
-;; (add-test 'tt-plus "ths s  lttl strng"
-;;           [$ collect "this is a little string" nv?]
-;;           =?)
-;; (add-test 'tt-plus (string->list "ths s  lttl strng")
-;;           [$ reject (string->list "this is a little string") vowel?]
-;;           equal?)
-;; (add-test 'tt-plus (string->list "ths s  lttl strng")
-;;           [$ collect (string->list "this is a little string") nv?]
-;;           =?)
-;; (add-test 'tt-plus (list->vector (string->list "ths s  lttl strng"))
-;;           [$ reject  (list->vector (string->list "this is a little string")) vowel?]
-;;           =?)
-;; (add-test 'tt-plus (list->vector (string->list "ths s  lttl strng"))
-;;           [$ collect (list->vector (string->list "this is a little string")) nv?]
-;;           =?)
-;; (add-test 'tt-plus "123"          [$ map "123"          id] =?)
-;; (add-test 'tt-plus (vector 1 2 3) [$ map (vector 1 2 3) id] =?)
-;; (add-test 'tt-plus (list   1 2 3) [$ map (list   1 2 3) id] =?)
-;; (add-test 'tt-plus "23"         [$ slice "012345"             2 4] =?)
-;; (add-test 'tt-plus (vector 2 3) [$ slice (vector 0 1 2 3 4 5) 2 4] =?)
-;; (add-test 'tt-plus (list   2 3) [$ slice (list   0 1 2 3 4 5) 2 4] =?)
-;; (add-test 'tt-plus 6 [$ length "012345"] =?)
-;; (add-test 'tt-plus 6 [$ length (vector 0 1 2 3 4 5)] =?)
-;; (add-test 'tt-plus 6 [$ length (list   0 1 2 3 4 5)] =?)
-;; (add-test 'tt-plus #\3 [$ iref "012345"             3] =?)
-;; (add-test 'tt-plus   3 [$ iref (vector 0 1 2 3 4 5) 3] =?)
-;; (add-test 'tt-plus   3 [$ iref (list   0 1 2 3 4 5) 3] =?)
-;; (add-test 'tt-plus "123"          [$ shallow-clone "123"] =?)
-;; (add-test 'tt-plus (vector 1 2 3) [$ shallow-clone (vector 1 2 3)] =?)
-;; (add-test 'tt-plus (list   1 2 3) [$ shallow-clone (list   1 2 3)] =?)
-
-
+(test-equal "event operation 1"
+            '(mouse-down 40 100)
+            [$ handle-event event-handlers e1])
+(test-equal "event operation 2"
+            '(mouse-move 45  98)
+            [$ handle-event event-handlers e2])
+(test-equal "event operation 3"
+            '(mouse-up   46  19)
+            [$ handle-event event-handlers e3])
+(test-equal "event operation 4"
+            '(mouse-up   46  19)
+            [$ handle-event event-handlers e3])
 
 
 (test-end)
