@@ -151,7 +151,9 @@
                       (make-setter-getter ((cdr p) obj))))
          al))
   (define (partition pred? list)
-    (let loop ( (yes '()) (no '()) (list list) )
+    (let loop ((yes '())
+               (no '())
+               (list list))
       (cond
        ((null? list) (values (reverse yes) (reverse no)))
        ((pred? (car list))
@@ -178,9 +180,9 @@
     (when del
           (let* ((delegate ((cdr del) cloned))
                  (cloned-delegate
-                  (when (list? delegate)
-                        (map deep-clone delegate)
-                        (deep-clone delegate))))
+                  (if (list? delegate)
+                      (map deep-clone delegate)
+                      (deep-clone delegate))))
             (set-cdr! del (lambda (obj) cloned-delegate))))
     cloned))
 (define deep-clone-method (lambda (self) (deep-clone self)))
