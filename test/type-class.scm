@@ -1,12 +1,12 @@
-(##import energy: testing)
+(##spheres-load energy: testing)
 
-(##import-include type-class-macros)
-(##import-include core: base-macros)
-(##import fabric: algorithm/list)
+(##spheres-include core: base-macros)
+(##spheres-include core: match-macros)
+(##spheres-include type-class-macros)
+
+(##spheres-load fabric: algorithm/list)
 
 (test-begin "Type-classes")
-
-
 
 
 ;;--------------------------------------------------------------------------------------------------

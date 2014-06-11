@@ -19,21 +19,20 @@
        ((-> '?selector obj) obj ?args ...)))))
 
 ;;! Define a type-checking predicate
+;; Doens't work because of hygienic ?name renaming
 ;; (define-syntax define-predicate
 ;;   (syntax-rules ()
 ;;     ((_ name)
-;;      (##define (?name obj)
+;;      (define (?name obj)
 ;;        (cond ((not (prototype-object? obj)) #f)
 ;;              ((find-method '?name obj) => (lambda (m) (m obj)))
 ;;              (else #f))))))
-(define-syntax define-predicate
-  (rsc-macro-transformer
-   (lambda (form env)
-     (let ((?name (list-ref form 1)))
-       `(##define (,?name obj)
-          (cond ((not (prototype-object? obj)) #f)
-                ((find-method ',?name obj) => (lambda (m) (m obj)))
-                (else #f)))))))
+(define-macro (define-predicate ?name)
+  `(define (,?name obj)
+     (cond ((not (prototype-object? obj)) #f)
+           ((find-method ',?name obj) => (lambda (m) (m obj)))
+           (else #f))))
+
 
 (define-syntax field-spec
   (syntax-rules ()

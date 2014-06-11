@@ -1,7 +1,7 @@
-(##import energy: testing)
+(##spheres-load energy: testing)
 
-(##import prototype)
-(##import strings: format)
+(##spheres-load prototype)
+(##spheres-load strings: format)
 
 (test-begin "Prototype-based object system")
 
